@@ -13,7 +13,7 @@ class LaneRegion_Test(Asserter):
 
 class LaneRegion_EqualN_TestBase(TestBase, LaneRegion_Test):
     N = 4
-    n = int(1e4)
+    n = int(1e2)
 
     probs = [.1, .99]
     weights = [[.99, .01], [.01, .99]]

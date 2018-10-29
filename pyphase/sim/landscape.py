@@ -1,7 +1,8 @@
-import itertools
 from numpy import random as rnd
 
-__all__ = ['Applicator', 'Landscape']
+from ..applicator import Applicator
+
+__all__ = ['Landscape']
 
 class Landscape(Applicator):
     @property
