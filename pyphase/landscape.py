@@ -1,3 +1,4 @@
+import itertools
 from numpy import random as rnd
 
 __all__ = ['Applicator', 'Landscape']
@@ -19,7 +20,8 @@ class Applicator:
     def aGetFlat(self, attr):
         flat = []
         for sub in self.aGet(attr):
-            flat.extend(sub)
+            if sub is not None:
+                flat.extend(sub)
         return flat
 
 class Landscape(Applicator):
@@ -62,7 +64,7 @@ class Landscape(Applicator):
     def successfulPebbles(self):
         return self.aGetFlat('successfulPebbles')
 
-    def run(self, nsample=None, auto=True):
+    def run(self, auto=False):
         if self.term:
             return
 
@@ -70,10 +72,10 @@ class Landscape(Applicator):
         for l in self.lands:
             self.n += l.run()
 
-        self.setPebbleSample(n=nsample)
         if auto:
+            self.setNextPebbleSample(n=auto)
             for endscape in self.endscapes:
-                endscape.run(nsample=nsample)
+                endscape.run(auto=auto)
 
     def chooseLands(self, n, p=None):
         if not self.lands:
@@ -81,12 +83,17 @@ class Landscape(Applicator):
 
         return rnd.choice(self.lands, size=n, p=p)
 
-    def initPebbles(self, *n):
-        for l,nl in zip(self.lands, n):
-            l.initPebbles(n=nl)
+    def initPebbles(self, *ns):
+        if len(ns)==1:
+           ns = ns*len(self.lands)
+        elif len(ns) != len(self.lands):
+            raise ValueError
 
-    def setPebbleSample(self, n=None):
-        n = self.n if n is None else n
+        for l,n in zip(self.lands, ns):
+            l.initPebbles(n)
+
+    def setNextPebbleSample(self, n=None):
+        if n is None: n = self.n
 
         # choose a sample of appropriate size
         self.pebbleSample = rnd.choice(self.successfulPebbles, size=n)

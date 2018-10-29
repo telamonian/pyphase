@@ -49,7 +49,10 @@ class Land:
         self.setPebbles(self._newPebbles)
         self._newPebbles = []
 
-    def run(self):
+    def run(self, n=None):
+        if n is not None:
+            self.initPebbles(n)
+
         self.result = self._successDist.rvs(len(self.pebbles))
 
         # np.compress takes from an array based on a boolean mask
