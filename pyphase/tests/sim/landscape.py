@@ -2,9 +2,12 @@ from testdebug import TestBase
 
 from pyphase import Land, Landscape
 
-class Test_Landscape(TestBase):
-    def test_Landscape(self):
-        n = 10000
+__all__ = ['Landscape_TestBase']
+
+class Landscape_TestBase(TestBase):
+    @classmethod
+    def setUpClass(cls):
+        n = 100
 
         pslow = .1
         pfast = .99
@@ -38,3 +41,5 @@ class Test_Landscape(TestBase):
 
         lscapeA.initPebbles(n)
         lscapeA.run()
+
+        cls.landscapes = [lscapeA, lscape0, lscape1, lscape2, lscapeB]
