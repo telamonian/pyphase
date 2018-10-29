@@ -4,7 +4,8 @@ from .landscape import Landscape
 __all__ = ['LaneRegion']
 
 class Region:
-    def __init__(self, *args, **kwargs):
+    def __init__(self, N, *args, **kwargs):
+        self.N = N
         self.landscapes = None
 
         self.init(*args, **kwargs)
@@ -30,8 +31,8 @@ class LaneRegion(Region):
     _pterm = 0
     _wterm = [1.0]
 
-    def init(self, nland, probs, weights):
-        if nland < 3:
+    def init(self, probs, weights):
+        if self.N < 2:
             raise ValueError
 
         if len(probs) != len(weights):
@@ -49,7 +50,7 @@ class LaneRegion(Region):
         )]
 
         # the intermediate landscapes that make up the lanes
-        for i in reversed(range(nland - 2)):
+        for i in reversed(range(self.N - 1)):
             name = '%d' % i
             self.landscapes.insert(0, Landscape(
                 name=name,
