@@ -1,8 +1,19 @@
-from numpy import random as rnd
+import numpy as np
 
 from ..applicator import Applicator
 
 __all__ = ['Landscape']
+
+def varBernoulliMixture(w, p, max=False):
+    w,p = np.asanyarray(w), np.asanyarray(p)
+    u = w.dot(p)
+
+    if max:
+        p = np.zeros(p.shape)
+        p[...] = u
+
+    sumterm = p**2 + p*(1 - p)
+    return w.dot(sumterm) - u**2
 
 class Landscape(Applicator):
     @property
@@ -33,6 +44,10 @@ class Landscape(Applicator):
         return endlands
 
     @property
+    def weights(self):
+        return self.aget('n', array=True)/self.n
+
+    @property
     def pebbles(self):
         return self.aget('pebbles', flatten=True)
 
@@ -43,10 +58,6 @@ class Landscape(Applicator):
     @property
     def successfulPebbles(self):
         return self.aget('successfulPebbles', flatten=True)
-
-    @property
-    def expected(self):
-        return len(self.successfulPebbles)/len(self.pebbles)
 
     def run(self, auto=False):
         if self.term:
@@ -65,7 +76,7 @@ class Landscape(Applicator):
         if not self.lands:
             raise ValueError("self.lands is empty")
 
-        return rnd.choice(self.lands, size=n, p=p)
+        return np.random.choice(self.lands, size=n, p=p)
 
     def initPebbles(self, *ns):
         if len(ns)==1:
@@ -76,11 +87,9 @@ class Landscape(Applicator):
         for l,n in zip(self.lands, ns):
             l.initPebbles(n)
 
-    def setNextPebbleSample(self, n=None):
-        if n is None: n = self.n
-
+    def setNextPebbleSample(self, n):
         # choose a sample of appropriate size
-        self.pebbleSample = rnd.choice(self.successfulPebbles, size=n)
+        self.pebbleSample = np.random.choice(self.successfulPebbles, size=n)
         for p in self.pebbleSample:
             p.land.addNewPebble(p.copy())
 
@@ -99,3 +108,24 @@ class Landscape(Applicator):
 
     def load(self, *landSav):
         self.applyMethod('load', *landSav, bcast=True)
+        self.n = len(self.failedPebbles) + len(self.successfulPebbles)
+
+    def expected(self):
+        return self.weights.dot(self.aget('p', array=True))
+
+    def sampleMean(self):
+        return len(self.successfulPebbles)/len(self.pebbles)
+
+    def sampleVar(self, ddof=0):
+        mean = self.sampleMean()
+        return (((1 - mean)**2)*len(self.successfulPebbles) + ((0 - mean)**2)*len(self.failedPebbles))/(self.n - ddof)
+
+    def var(self, max=False):
+        return varBernoulliMixture(self.weights, self.aget('p', array=True), max=max)
+
+        # u = self.expected()
+        # if max:
+        #     return u*(1 - u)
+        # else:
+        #     p = self.aget('p', array=True)
+        #     return (self.aget('n', array=True)/self.n).dot(p**2 + (p*(1 - p))**2) - u**2

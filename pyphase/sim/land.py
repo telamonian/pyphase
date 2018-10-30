@@ -7,8 +7,9 @@ __all__ = ['Land']
 
 class Land:
     def __init__(self, name, p, endscape=None, endweights=None, pebbles=None):
-        self.result = None
         self._newPebbles = []
+        self.n = None
+        self.result = None
 
         self.name = name
         self.p = p
@@ -53,7 +54,8 @@ class Land:
         if n is not None:
             self.initPebbles(n)
 
-        self.result = self._successDist.rvs(len(self.pebbles))
+        self.n = len(self.pebbles)
+        self.result = self._successDist.rvs(self.n)
 
         # np.compress takes from an array based on a boolean mask
         self.failedPebbles = np.compress(np.logical_not(self.result), self.pebbles)
@@ -87,6 +89,7 @@ class Land:
         self.setPebbles(pebbles=pebbles,
                         failedPebbles=pebbles[:failedPebbleCount],
                         successfulPebbles=pebbles[failedPebbleCount:])
+        self.n = len(self.failedPebbles) + len(self.successfulPebbles)
 
     def __str__(self):
         return '{obj.name}, p={obj.p}'.format(obj=self)

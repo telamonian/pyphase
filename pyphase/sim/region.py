@@ -20,14 +20,6 @@ class Region(Applicator):
         return self._landscapes[-1]
 
     @property
-    def expected(self):
-        return self.aget('expected')
-
-    @property
-    def expectedDivN(self):
-        return self.expected*(1/self.nmat)
-
-    @property
     def n(self):
         return self.aget('n')
 
@@ -63,6 +55,20 @@ class Region(Applicator):
 
     def load(self, *landscapeSav):
         self.applyMethod('load', *landscapeSav, bcast=True)
+
+    def expected(self):
+        return self.applyMethod('expected')
+
+    def sampleMean(self):
+        return self.applyMethod('sampleMean')
+
+    def sampleVar(self, ddof=0):
+        return self.applyMethod('sampleVar', ddof=ddof)
+
+    def var(self, divn=False, max=False):
+        div = (1/self.nmat) if divn else 1
+
+        return self.applyMethod('var', max=max)*div
 
 class LaneRegion(Region):
     _pterm = 0
