@@ -5,16 +5,20 @@ from pyphase import Land, Landscape
 __all__ = ['Landscape_TestBase']
 
 class Landscape_TestBase(TestBase):
+    N = 4
+    n = int(1e2)
+
+    probs = [.1, .99]
+    weights = [[.99, .01], [.01, .99]]
+
     @classmethod
     def setUpClass(cls):
-        n = 100
-
-        pslow = .1
-        pfast = .99
+        pslow = cls.probs[0]
+        pfast = cls.probs[1]
         pterm = 0
 
-        wslow = [.99, .01]
-        wfast = [.01, .99]
+        wfast = cls.weights[1]
+        wslow = cls.weights[0]
         wterm = [1.0]
 
         lscapeB = Landscape(name='B',

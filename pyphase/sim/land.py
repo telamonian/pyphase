@@ -34,10 +34,10 @@ class Land:
         self.endscape = endscape
         self.endweights = endweights
 
-    def setPebbles(self, pebbles=None):
+    def setPebbles(self, pebbles=None, failedPebbles=None, successfulPebbles=None):
         self.pebbles = [] if pebbles is None else pebbles
-        self.failedPebbles = None
-        self.successfulPebbles = None
+        self.failedPebbles = [] if failedPebbles is None else failedPebbles
+        self.successfulPebbles = [] if successfulPebbles is None else successfulPebbles
 
     def initPebbles(self, n):
         self.setPebbles([Pebble(self) for i in range(n)])
@@ -77,6 +77,16 @@ class Land:
             return self.endscape.chooseLands(n=n, p=self.endweights)
         else:
             return []
+
+    def save(self):
+        return len(self.pebbles), len(self.failedPebbles)
+
+    def load(self, pebbleCount, failedPebbleCount):
+        pebbles = [Pebble(self) for i in range(pebbleCount)]
+
+        self.setPebbles(pebbles=pebbles,
+                        failedPebbles=pebbles[:failedPebbleCount],
+                        successfulPebbles=pebbles[failedPebbleCount:])
 
     def __str__(self):
         return '{obj.name}, p={obj.p}'.format(obj=self)

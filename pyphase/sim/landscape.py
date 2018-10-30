@@ -34,15 +34,19 @@ class Landscape(Applicator):
 
     @property
     def pebbles(self):
-        return self.aGetFlat('pebbles')
+        return self.aget('pebbles', flatten=True)
 
     @property
     def failedPebbles(self):
-        return self.aGetFlat('failedPebbles')
+        return self.aget('failedPebbles', flatten=True)
 
     @property
     def successfulPebbles(self):
-        return self.aGetFlat('successfulPebbles')
+        return self.aget('successfulPebbles', flatten=True)
+
+    @property
+    def expected(self):
+        return len(self.successfulPebbles)/len(self.pebbles)
 
     def run(self, auto=False):
         if self.term:
@@ -89,3 +93,9 @@ class Landscape(Applicator):
         stats['p'] = len(self.successfulPebbles)/len(self.pebbles)
 
         return stats
+
+    def save(self):
+        return tuple(sav for sav in self.applyMethod('save'))
+
+    def load(self, *landSav):
+        self.applyMethod('load', *landSav, bcast=True)
