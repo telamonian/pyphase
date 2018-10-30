@@ -3,7 +3,7 @@ from testdebug import Asserter, TestBase
 
 from pyphase import LaneRegion
 
-__all__ = ['LaneRegion_EqualN_TestBase']
+__all__ = ['LaneRegion_EqualN_TestBase', 'LaneRegion_TestBase']
 
 def theoreticalExpected(regionSav, probs):
     ns = [np.sum(landSav[0] for landSav in landscapeSav)
@@ -17,7 +17,7 @@ def theoreticalSampleMean(regionSav):
             (np.sum(np.array(landSav) for landSav in landscapeSav)
              for landscapeSav in regionSav)]
 
-class LaneRegion_Test(Asserter):
+class _Region_Test(Asserter):
     def test_pebbleCount(self):
         for subn in self.laneRegion.n:
             self.assertEqual(self.n, subn)
@@ -73,14 +73,37 @@ class LaneRegion_Test(Asserter):
         self.assertArrayAlmostEqual(intended, actual)
 
 
-class LaneRegion_EqualN_TestBase(TestBase, LaneRegion_Test):
+class _LaneRegion_Test(TestBase, _Region_Test):
+    N = None
+    n = None
+
+    probs = None
+    weights = None
+
+    laneRegion = None
+    laneRegionSave = None
+
+    intended = None
+
+    @classmethod
+    def genLaneRegion(cls):
+        return LaneRegion(N=cls.N, probs=cls.probs, weights=cls.weights)
+
+    @classmethod
+    def setUpClass(cls):
+        cls.laneRegion = cls.genLaneRegion()
+        cls.laneRegion.run(*cls.n)
+
+        cls.laneRegionReloaded = cls.genLaneRegion()
+        cls.laneRegionReloaded.load(*cls.laneRegionSave)
+
+class LaneRegion_EqualN_TestBase(_LaneRegion_Test):
     N = 4
-    n = int(1e4)
+    n = [int(1e4)]
 
     probs = [.1, .99]
     weights = [[.99, .01], [.01, .99]]
 
-    laneRegion = None
     laneRegionSave = (
         ((10000, 8994),),
         ((9906, 8934), (94, 0)),
@@ -96,14 +119,24 @@ class LaneRegion_EqualN_TestBase(TestBase, LaneRegion_Test):
         ('var_max',    [0.09,0.0966228,0.157278,0.243703]),
     ])
 
-    @classmethod
-    def genLaneRegion(cls):
-        return LaneRegion(N=cls.N, probs=cls.probs, weights=cls.weights)
+class LaneRegion_TestBase(_LaneRegion_Test):
+    N = 4
+    n = [int(5e3), int(1e4), int(1.5e4), int(9e3)]
 
-    @classmethod
-    def setUpClass(cls):
-        cls.laneRegion = cls.genLaneRegion()
-        cls.laneRegion.run(cls.n)
+    probs = [.1, .99]
+    weights = [[.99, .01], [.01, .99]]
 
-        cls.laneRegionReloaded = cls.genLaneRegion()
-        cls.laneRegionReloaded.load(*cls.laneRegionSave)
+    laneRegionSave = (
+        ((5000, 4478),),
+        ((9877, 8851), (123, 3)),
+        ((13364, 11989), (1636, 17)),
+        ((4146, 3723), (4854, 51))
+    )
+
+    intended = dict([
+        ('expected',   [0.1,0.110947,0.197069,0.580007]),
+        ('sampleMean', [0.1044,0.1146,0.1996,0.580667]),
+        ('sampleVar',  [0.0935006,0.101467,0.15976,0.243493]),
+        ('var',        [0.09,0.0986378,0.158233,0.243599]),
+        ('var_max',    [0.09,0.0986378,0.158233,0.243599]),
+    ])

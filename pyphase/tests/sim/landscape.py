@@ -2,7 +2,7 @@ from testdebug import TestBase
 
 from pyphase import Land, Landscape
 
-__all__ = ['Landscape_TestBase']
+__all__ = [] #'Landscape_TestBase']
 
 class Landscape_TestBase(TestBase):
     N = 4
