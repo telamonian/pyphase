@@ -30,10 +30,15 @@ class Applicator:
         return [getattr(obj, attr) for obj in self._iterable]
 
 
-    def _fetch(self, it, flatten=False, array=False):
+    def _fetch(self, it, flatten=False, array=False, summary=False, transpose=False):
         if flatten:
             it = self.flatten(it)
-        if array:
+
+        if summary:
+            it = np.mean(it, axis=0)
+        elif transpose:
+            it = np.transpose(it)
+        elif array:
             it = np.asanyarray(it)
 
         return it
