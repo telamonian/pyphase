@@ -26,9 +26,9 @@ class _Sim_Test(Asserter):
 
         self.assertArrayAlmostEqual(intended, actual)
 
-    def test_expectedEstimator(self):
-        intended = self.intended['expectedEstimator']
-        actual = self.simReloaded.expectedEstimator()
+    def test_expected(self):
+        intended = self.intended['expected']
+        actual = self.simReloaded.expected()
 
         self.assertArrayAlmostEqual(intended, actual)
 
@@ -58,14 +58,14 @@ class LaneSim_EqualN_TestBase(TestBase, _Sim_Test):
 
     intended = dict([
         ('covEstimator', [
-            [3.81295e-32,-8.08891e-33,-9.81252e-33,2.36092e-32],
-            [-8.08891e-33,7.69823e-06,6.28392e-05,0.000184966],
-            [-9.81252e-33,6.28392e-05,0.000531458,0.00156291],
-            [2.36092e-32,0.000184966,0.00156291,0.00475734],
+            [7.68539e-06,1.12523e-06,9.27559e-06,2.65175e-05],
+            [1.12523e-06,1.35106e-05,4.88224e-05,0.000152594],
+            [9.27559e-06,4.88224e-05,0.000515784,0.00151831],
+            [2.65175e-05,0.000152594,0.00151831,0.00477142],
         ]),
-        ('expectedEstimator', [0.1,0.10892,0.187724,0.553736]),
-        ('sampleMean',        [0.099492,0.109322,0.188192,0.55377]),
-        ('sampleVar',         [0.0895857,0.0973573,0.152265,0.242385]),
+        ('expected',   [0.1,0.10892,0.187724,0.553736]),
+        ('sampleMean', [0.099492,0.109322,0.188192,0.55377]),
+        ('sampleVar',  [0.0895857,0.0973573,0.152265,0.242385]),
     ])
 
     @classmethod

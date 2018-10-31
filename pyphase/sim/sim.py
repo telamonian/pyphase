@@ -37,9 +37,9 @@ class Sim(Applicator):
 
 
     def covEstimator(self):
-        return np.cov(self.expectedEstimator(summary=False))
+        return np.cov(self.sampleMean(summary=False))
 
-    def expectedEstimator(self, summary=True):
+    def expected(self, summary=True):
         kwargs = {'summary': summary, 'transpose': not summary}
         return self.applyMethod('expected', **kwargs)
 
